@@ -124,3 +124,9 @@ The local page is `src/test/resources/login.html`. Valid credentials are `studen
 ## Version notes
 
 The project pins Selenium Java 4.52.0 and TestNG 7.9.0, and uses Maven Compiler Plugin 3.13.0 and Surefire 3.5.3. Selenium's current Java getting-started/download documentation lists 4.52.0 and notes that Selenium Manager handles drivers from Selenium 4.6 onward. TestNG's download page lists 7.9.0. References: [Selenium downloads](https://www.selenium.dev/downloads/), [Selenium driver setup](https://www.selenium.dev/documentation/webdriver/getting_started/using_selenium/), [TestNG downloads](https://testng.org/download).
+
+## GitHub Actions CI
+
+The workflow in `.github/workflows/ci.yml` runs on pushes and pull requests targeting `main` or `develop`, and can also be started manually from the GitHub Actions tab. It uses Temurin Java 21 with Maven dependency caching and runs the TestNG suite in headless Chrome. Surefire XML reports and an HTML summary are uploaded as a downloadable artifact for 14 days, including when tests fail.
+
+To see a run, open the repository's **Actions** tab, select **Selenium framework CI**, and open the run. Download **test-reports-<run number>** under **Artifacts** to view the HTML report and detailed Surefire files.
