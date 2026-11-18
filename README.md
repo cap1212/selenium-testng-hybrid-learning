@@ -124,3 +124,35 @@ The local page is `src/test/resources/login.html`. Valid credentials are `studen
 ## Version notes
 
 The project pins Selenium Java 4.52.0 and TestNG 7.9.0, and uses Maven Compiler Plugin 3.13.0 and Surefire 3.5.3. Selenium's current Java getting-started/download documentation lists 4.52.0 and notes that Selenium Manager handles drivers from Selenium 4.6 onward. TestNG's download page lists 7.9.0. References: [Selenium downloads](https://www.selenium.dev/downloads/), [Selenium driver setup](https://www.selenium.dev/documentation/webdriver/getting_started/using_selenium/), [TestNG downloads](https://testng.org/download).
+
+## GitHub Actions CI/CD
+
+The workflow at `.github/workflows/ci.yml` automates continuous integration for this framework. It runs on pushes and pull requests targeting `main` or `develop`, and it can also be started manually from the **Actions** tab.
+
+### What the workflow does
+
+- Sets up Temurin Java 21 and caches Maven dependencies.
+- Runs `mvn clean test` with Chrome in headless mode.
+- Generates an HTML summary from the Surefire XML results.
+- Uploads the HTML summary and detailed test reports as an artifact, even when tests fail. Artifacts are retained for 14 days.
+
+The workflow currently lives on `develop`. Merge it into `main` to enable the same workflow for pushes and pull requests on the default branch. This repository is an automation framework, so there is no application deployment job; the pipeline validates the framework and delivers its test reports.
+
+### View GitHub Actions results
+
+1. Open the repository's **Actions** tab and select **Selenium framework CI**.
+2. Open a workflow run and review the test step and its summary.
+3. Under **Artifacts**, download `test-reports-<run number>` to view the HTML report and detailed Surefire files.
+
+The first successful CI run completed 6 tests with 0 failures: [view run](https://github.com/cap1212/selenium-testng-hybrid-learning/actions/runs/44290213902).
+
+### Generate an HTML report locally
+
+Run the tests and then build the HTML report from the generated Surefire results:
+
+```bash
+mvn clean test -Dheadless=true
+mvn --batch-mode --no-transfer-progress org.apache.maven.plugins:maven-surefire-report-plugin:3.6.0:report-only
+```
+
+Open `target/reports/surefire.html` in a browser.

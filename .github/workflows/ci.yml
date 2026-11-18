@@ -1,0 +1,54 @@
+name: Selenium framework CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run Selenium and TestNG tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run Maven test suite
+        run: mvn --batch-mode --no-transfer-progress clean test -Dbrowser=chrome -Dheadless=true
+
+      - name: Generate HTML test report
+        if: always()
+        run: |
+          if compgen -G "target/surefire-reports/TEST-*.xml" > /dev/null; then
+            mvn --batch-mode --no-transfer-progress org.apache.maven.plugins:maven-surefire-report-plugin:3.6.0:report-only
+          else
+            echo "No Surefire XML results found; skipping HTML report."
+          fi
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports-${{ github.run_number }}
+          path: |
+            target/surefire-reports/**
+            target/reports/surefire.html
+          if-no-files-found: warn
+          retention-days: 14
