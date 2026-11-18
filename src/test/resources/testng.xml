@@ -1,0 +1,5 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Selenium Learning Suite" parallel="methods" thread-count="2" verbose="1">
+  <listeners><listener class-name="edu.learning.framework.listeners.LearningListener"/></listeners>
+  <test name="Login scenarios"><classes><class name="edu.learning.tests.LoginTest"/></classes></test>
+</suite>
